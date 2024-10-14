@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, send_file
-from pytube import YouTube
+from pytubefix import YouTube
 import tempfile
 import os
 import re
