@@ -1,0 +1,1 @@
+Flask==2.3.3  # O la versión que prefieras
