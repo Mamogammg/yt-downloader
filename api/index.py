@@ -12,7 +12,7 @@ def sanitize_filename(filename):
 
 @app.route('/download', methods=['GET'])
 def download():
-    url = request.args.get('url')
+    url = request.args.get('url', 'MWEB')
     format = request.args.get('format', 'mp4')
 
     if not url:
