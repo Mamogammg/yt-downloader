@@ -19,7 +19,7 @@ def download():
         return jsonify({"message": "Por favor, proporciona una URL válida."}), 400
 
     try:
-        yt = YouTube(url)
+        yt = YouTube(url, client='WEB_CREATOR')
         is_audio = (format == "mp3")  # This line is kept for reference, but will not be used.
         stream = yt.streams.filter(file_extension=format).first()  # Directly filter by requested format
 
