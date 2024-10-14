@@ -1,2 +1,2 @@
 Flask==2.3.3
-pytubefix==6.3.3  # Verifica que sea compatible con la última versión
+pytubefix==7.3.1  # Verifica que sea compatible con la última versión
