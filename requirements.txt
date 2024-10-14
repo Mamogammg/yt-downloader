@@ -1,1 +1,2 @@
-Flask==2.3.3  # O la versión que prefieras
+Flask==2.3.3
+pytube==12.1.0  # Verifica que sea compatible con la última versión
