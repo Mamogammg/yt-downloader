@@ -13,7 +13,7 @@ def sanitize_filename(filename):
 @app.route('/download', methods=['GET'])
 def download_video():
     # Obtener la URL del video y las cookies desde los encabezados de la solicitud
-    video_url = request.form.get('url')
+    video_url = request.args.get('url')
     cookies = request.headers.get('Cookie')
 
     if not video_url:
