@@ -21,10 +21,11 @@ def download_video():
     try:
         # Crear un directorio temporal para almacenar el video
         with tempfile.TemporaryDirectory() as temp_dir:
-            # Opciones de descarga para yt-dlp
+            # Opciones de descarga para yt-dlp con cookies
             ydl_opts = {
                 'outtmpl': f'{temp_dir}/%(title)s.%(ext)s',  # Descargar en el directorio temporal
                 'format': 'best',  # Descargar la mejor calidad disponible
+                'cookiefile': 'cookies.txt',  # Ruta al archivo de cookies exportadas
             }
 
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
