@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify, send_file, render_template
 import yt_dlp
 import os
 import tempfile
@@ -10,10 +10,14 @@ app = Flask(__name__)
 def sanitize_filename(filename):
     return re.sub(r'[^\w\s-]', '', filename).strip().replace(' ', '_')
 
-@app.route('/download', methods=['GET'])
+@app.route('/', methods=['GET'])
+def home():
+    return render_template('index.html')
+
+@app.route('/download', methods=['POST'])
 def download_video():
-    # Obtener la URL del video desde los parámetros de la URL
-    video_url = request.args.get('url')
+    # Obtener la URL del video desde el formulario
+    video_url = request.form.get('url')
 
     if not video_url:
         return jsonify({'error': 'Falta el parámetro "url" en la solicitud'}), 400
