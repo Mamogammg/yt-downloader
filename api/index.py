@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_file, render_template
+from flask import Flask, request, render_template, redirect, url_for, send_file
 import yt_dlp
 import os
 import tempfile
@@ -20,7 +20,7 @@ def download_video():
     video_url = request.form.get('url')
 
     if not video_url:
-        return jsonify({'error': 'Falta el parámetro "url" en la solicitud'}), 400
+        return render_template('index.html', error='Falta el parámetro "url" en la solicitud')
 
     try:
         # Crear un directorio temporal para almacenar el video
@@ -40,13 +40,13 @@ def download_video():
 
             # Verificar si el archivo se descargó correctamente
             if not os.path.exists(video_path):
-                return jsonify({'error': f"El archivo {video_filename} no fue encontrado después de la descarga"}), 500
+                return render_template('index.html', error='El video no se pudo descargar.')
 
-            # Devolver el archivo al cliente
-            return send_file(video_path, as_attachment=True)
+            # Redirigir a una página de descarga
+            return render_template('download.html', video_path=video_path, video_title=video_title)
 
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return render_template('index.html', error=str(e))
 
 if __name__ == '__main__':
     app.run(debug=True)
