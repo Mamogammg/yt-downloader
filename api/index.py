@@ -1,41 +1,46 @@
 from flask import Flask, request, jsonify, send_file
-from pytubefix import YouTube
-import tempfile
+import yt_dlp
 import os
-import re
+from time import sleep
 
 app = Flask(__name__)
 
-def sanitize_filename(filename):
-    # Remove invalid characters for filenames
-    return re.sub(r'[<>:"/\\|?*]', '', filename)
+# Directorio temporal donde se guardan los videos descargados
+DOWNLOAD_DIR = 'downloads'
+
+# Crear el directorio si no existe
+if not os.path.exists(DOWNLOAD_DIR):
+    os.makedirs(DOWNLOAD_DIR)
 
 @app.route('/download', methods=['GET'])
-def download():
-    url = request.args.get('url')
-    format = request.args.get('format', 'mp4')
+def download_video():
+    # Obtener el parámetro URL de la consulta
+    video_url = request.args.get('url')
 
-    if not url:
-        return jsonify({"message": "Por favor, proporciona una URL válida."}), 400
+    if not video_url:
+        return jsonify({'error': 'Falta el parámetro "url" en la consulta'}), 400
 
     try:
-        yt = YouTube(url)
-        is_audio = (format == "mp3")  # This line is kept for reference, but will not be used.
-        stream = yt.streams.filter(file_extension=format).first()  # Directly filter by requested format
+        # Opciones de descarga para yt-dlp
+        ydl_opts = {
+            'outtmpl': f'{DOWNLOAD_DIR}/%(title)s.%(ext)s',
+            'format': 'best',  # Descargar la mejor calidad disponible
+        }
 
-        if stream:
-            sanitized_title = sanitize_filename(yt.title)
-            with tempfile.NamedTemporaryFile(delete=False) as temp_file:
-                download_path = temp_file.name
-                stream.download(output_path=os.path.dirname(download_path), filename=os.path.basename(download_path))
-                return send_file(download_path, as_attachment=True, download_name=f"{sanitized_title}.{format}")
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info_dict = ydl.extract_info(video_url, download=True)
+            video_title = info_dict.get('title', 'video')
+            video_ext = info_dict.get('ext', 'mp4')
+            video_filename = f"{video_title}.{video_ext}"
+            video_path = os.path.join(DOWNLOAD_DIR, video_filename)
 
-        else:
-            return jsonify({"message": "No se encontraron flujos de video para el formato seleccionado."}), 404
+        sleep(5)
+
+        # Devolver el archivo al cliente
+        return send_file(video_path, as_attachment=True)
 
     except Exception as e:
-        return jsonify({"message": f"Error: {str(e)}"}), 500
+        return jsonify({'error': str(e)}), 500
 
-# Main execution for local testing
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True)
