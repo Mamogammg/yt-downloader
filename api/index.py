@@ -10,7 +10,7 @@ app = Flask(__name__)
 def sanitize_filename(filename):
     return re.sub(r'[^\w\s-]', '', filename).strip().replace(' ', '_')
 
-@app.route('/download', methods=['POST'])
+@app.route('/download', methods=['GET'])
 def download_video():
     # Obtener la URL del video y las cookies desde los encabezados de la solicitud
     video_url = request.form.get('url')
